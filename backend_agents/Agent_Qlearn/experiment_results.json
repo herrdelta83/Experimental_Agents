@@ -1,0 +1,19 @@
+{
+    "obstacle_density_case": "case 1",
+    "obstacle_density_percent": 15.0,
+    "reward_type": {
+        "goal_reward": 10,
+        "obstacle_penalty": -15,
+        "out_of_bounds_penalty": -10,
+        "step_penalty": -1
+    },
+    "total_steps": 113803,
+    "execution_time_seconds": 0.6649,
+    "hyperparameters": {
+        "alpha": 0.1,
+        "gamma": 0.99,
+        "epsilon": 0.5,
+        "episodes": 8000,
+        "max_steps": 400
+    }
+}
