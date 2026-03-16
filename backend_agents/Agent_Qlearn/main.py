@@ -4,17 +4,17 @@ import time
 
 
 GRID = [
-    [-1, -10, -1, -1, -1, -1, -1, -1, -1, -1, 10],
-    [-1, -10, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -10, -10, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -10, -10, -1, -1, -1, -10, -10, -1, -1],
-    [-1, -1, -1, -1, -1, -10, -1, -1, -1, -1, -1],
-    [-1, -10, -1, -1, -1, -10, -1, -1, -10, -1, -1],
-    [-1, -10, -1, -1, -1, -1, -1, -1, -10, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -10, -10, -1, -1, -1, -10, -10],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-10, -1, -1, -1, -1, -1, -1, -10, -1, -1, 10],
+    [-1, -10, -1, -10, -10, -10, -10, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -10, -10],
+    [-1, -10, -10, -10, -10, -1, -1, -1, -1, -1, -1],
+    [-10, -1, -10, -1, -1, -1, -10, -10, -10, -10, -1],
+    [-10, -1, -1, -1, -1, -1, -1, -1, -10, -1, -1],
+    [-1, -10, -10, -10, -10, -1, -1, -1, -1, -1, -10],
+    [-10, -1, -1, -1, -1, -1, -10, -10, -10, -10, -1],
+    [-10, -1, -10, -1, -1, -1, -1, -1, -1, -1, -10],
+    [-1, -10, -10, -10, -10, -1, -1, -1, -10, -1, -10],
+    [-1, -1, -1, -1, -1, -1, -10, -10, -10, -10, -1],
 ]
 
 ROWS = len(GRID)
@@ -44,8 +44,8 @@ EPISODES = 8000
 MAX_STEPS = 400
 
 EXPERIMENT_METADATA = {
-    "obstacle_density_case": "case 1",
-    "obstacle_density_percent": 15.0,
+    "obstacle_density_case": "case 3",
+    "obstacle_density_percent": 36.36,
     "reward_type": {
         "goal_reward": 10,
         "obstacle_penalty": -15,
@@ -108,14 +108,11 @@ def step(state, action):
 
 def train_q_learning():
     q_table = initialize_q_table()
-    total_steps = 0
 
     for episode in range(EPISODES):
         state = START
 
         for _ in range(MAX_STEPS):
-            total_steps += 1
-
             action = choose_action(q_table, state, EPSILON)
             next_state, reward, done = step(state, action)
 
@@ -137,13 +134,14 @@ def train_q_learning():
         if (episode + 1) % 500 == 0:
             print(f"Episode {episode + 1}/{EPISODES} completed")
 
-    return q_table, total_steps
+    return q_table
 
 
 def extract_greedy_path(q_table):
     state = START
     path = [state]
     visited = {state}
+    total_steps = 0
 
     for _ in range(MAX_STEPS):
         if state == GOAL:
@@ -161,11 +159,12 @@ def extract_greedy_path(q_table):
         path.append(next_state)
         visited.add(next_state)
         state = next_state
+        total_steps = len(path)
 
         if done:
             break
 
-    return path
+    return path, total_steps
 
 
 def save_q_table(q_table, filename="q_table.json"):
@@ -204,10 +203,10 @@ def save_experiment_results(total_steps, execution_time, filename="experiment_re
 def main():
     start_time = time.perf_counter()
 
-    q_table, total_steps = train_q_learning()
+    q_table = train_q_learning()
     save_q_table(q_table, "q_table.json")
 
-    best_path = extract_greedy_path(q_table)
+    best_path, total_steps = extract_greedy_path(q_table)
     save_path(best_path, "path.json")
 
     execution_time = time.perf_counter() - start_time
